@@ -6,4 +6,5 @@ import mongoose from 'mongoose'
 const dbName = "clasp"
 
 mongoose.connect(`mongodb://localhost:27017/${dbName}`)
-getResults()
+await getResults()
+mongoose.connection.close()

@@ -11,7 +11,7 @@ const ResultModel = model('results', ResultSchema);
 
 export async function getResults(){
   try {
-    const result = await ResultModel.find({}).exec();
+    const result = await ResultModel.find({patient_id: 2}).exec();
     console.log(result)
   } catch(e){
     console.error(e)
