@@ -11,14 +11,14 @@ interface TableQuery {
   patient_id?: number
 }
 
-const ResultSchema = new Schema({
+export const ResultSchema = new Schema({
   clinic_id: { type: SchemaTypes.ObjectId, required: true },
   patient_id: { type: Number, required: true },
   field_nm: { type: String, required: true },
   field_value: { type: String, required: true },
 });
 
-const ResultModel = model("results", ResultSchema);
+export const ResultModel = model("results", ResultSchema);
 
 export async function getTableData(clinicId: string, patientId: number | null = null): Promise<string> {
 
