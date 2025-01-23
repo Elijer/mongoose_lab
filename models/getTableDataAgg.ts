@@ -55,22 +55,29 @@ function transformAggregationResultToJSONTable(results: DBResult[]): string {
 
   const tableData: (string | number )[][] = []
 
-  for (let result of results){
-    const { field_nms: names, field_values: values, _id: patientId} = result
-    const emptySlots = Array.from({length: fieldNmSpace}, ()=>emptyVal)
-    const i = tableData.push([patientId, ...emptySlots]) - 1
-    for (const j in names){
-      const name = names[j]
-      if (Object.keys(fieldNmKey).includes(name)){
-        const fieldTableCol = fieldNmKey[name]
-        tableData[i][fieldTableCol] = values[j]
+  try {
+    for (let result of results){
+      const { field_nms: names, field_values: values, _id: patientId} = result
+      const emptySlots = Array.from({length: fieldNmSpace}, ()=>emptyVal)
+      const i = tableData.push([patientId, ...emptySlots]) - 1
+      for (const j in names){
+        const name = names[j]
+        if (Object.keys(fieldNmKey).includes(name)){
+          const fieldTableCol = fieldNmKey[name]
+          tableData[i][fieldTableCol] = values[j]
+        }
       }
     }
+    return JSON.stringify(tableData, null, 2);
+  } catch (e){
+    throw new Error(`Problem transforming table aggregate ${e}`)
   }
-
-  return JSON.stringify(tableData, null, 2);
 }
 
 function castAsObjectId(id: string){
-  return new Types.ObjectId(id)
+  try {
+    return new Types.ObjectId(id)
+  } catch(e){
+    throw new Error(`Couldn't build mongo ObjectId for id ${id}: ${e}`)
+  }
 }

@@ -41,31 +41,38 @@ export async function getTableData(clinicId: string, patientId: number | null = 
 
   if (patientId) query.patient_id = patientId;
 
-  const dpList = await ResultModel.find(query).exec();
+  try {
+    const dpList = await ResultModel.find(query).exec();
+    const resultIndexMap: Map<number, number> = new Map()
+    const rows: Row[] = []
+  
+    for (const result of dpList){
+  
+      const { patient_id, field_nm, field_value } = result
+      
+      if (!patient_id || !field_nm) continue
+  
+      let currentRowIndex: number | null = null
+  
+      if (!resultIndexMap.has(patient_id)){
 
-  const resultIndexMap: Map<number, number> = new Map()
-  const rows: Row[] = []
+        const newRow: Row = Array.from(
+          {length: rowLength},
+          ()=>emptyVal
+        )
 
-  for (const result of dpList){
-
-    const { patient_id, field_nm, field_value } = result
-    
-    if (!patient_id || !field_nm) continue
-
-    let currentRowIndex: number | null = null
-
-    if (!resultIndexMap.has(patient_id)){
-      // const newRow = Array(possibleFields.length+1).fill(emptyVal)
-      const newRow: Row = Array.from({length: rowLength}, ()=>emptyVal)
-      newRow[0] = patient_id
-      currentRowIndex = rows.push(newRow) - 1
-      resultIndexMap.set(patient_id, currentRowIndex)
+        newRow[0] = patient_id
+        currentRowIndex = rows.push(newRow) - 1
+        resultIndexMap.set(patient_id, currentRowIndex)
+      }
+  
+      const rowIndex = currentRowIndex ?? resultIndexMap.get(patient_id)
+      rows[rowIndex!][fieldMap[field_nm]] = field_value
+  
     }
-
-    const rowIndex = currentRowIndex ?? resultIndexMap.get(patient_id)
-    rows[rowIndex!][fieldMap[field_nm]] = field_value
-
+  
+    return JSON.stringify(rows, null, 2);
+  } catch (e){
+    throw new Error(`failure querying database for table data: ${e}`)
   }
-
-  return JSON.stringify(rows, null, 2);
 }
