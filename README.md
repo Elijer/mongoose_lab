@@ -1,5 +1,5 @@
 # Mongoose Lab
-I created this repo to explore a coding challenge I was given by a potential employer. That challenge can be found in docs/challenge.md.
+I created this repo to explore a coding challenge I was given by a potential employer. That challenge can be found in `docs/challenge.md`.
 
 Contents:
 - index.ts
